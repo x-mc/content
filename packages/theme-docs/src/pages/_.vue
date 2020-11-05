@@ -47,12 +47,13 @@ export default {
   },
   async asyncData ({ $content, store, app, params, error }) {
     const path = `/${app.i18n.locale}/${params.pathMatch || 'index'}`
-    const [document] = await $content({ deep: true }).where({ path }).fetch()
+    const [document] = await $content({ deep: true }).where({ path, draft: false }).fetch()
     if (!document) {
       return error({ statusCode: 404, message: 'Page not found' })
     }
 
     const [prev, next] = await $content(app.i18n.locale, { deep: true })
+      .where({ draft: false })
       .only(['title', 'slug', 'to'])
       .sortBy('position', 'asc')
       .surround(document.slug, { before: 1, after: 1 })
